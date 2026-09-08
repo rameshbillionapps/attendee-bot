@@ -100,4 +100,19 @@ if [[ "${PA_DEBUG:-0}" = "1" ]]; then
 fi
 
 echo "[entrypoint] PulseAudio ready. Exec: $*"
+
+# Run Django startup tasks if gunicorn is being started
+if [[ "$1" == "gunicorn" ]]; then
+  echo "[entrypoint] Running Django startup tasks..."
+  cd /attendee 2>/dev/null || cd /app 2>/dev/null || cd "$(dirname "$BASH_SOURCE")"
+
+  # Run migrations
+  echo "[entrypoint] Running database migrations..."
+  python manage.py migrate --no-input || echo "[entrypoint] Migrations failed or already applied"
+
+  # Collect static files
+  echo "[entrypoint] Collecting static files..."
+  python manage.py collectstatic --no-input --clear || echo "[entrypoint] Collectstatic failed"
+fi
+
 exec "$@"

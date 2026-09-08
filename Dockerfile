@@ -132,6 +132,8 @@ RUN mkdir -p /etc/opt/chrome/policies/managed \
 # Switch to non-root AFTER copies to avoid permission flakiness
 USER app
 
+ENV DJANGO_SETTINGS_MODULE=attendee.settings.production
+
 # Use tini + entrypoint; CMD can be overridden by compose
 ENTRYPOINT ["/tini","--","/usr/local/bin/entrypoint.sh"]
-CMD ["bash"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "attendee.wsgi"]
