@@ -10,8 +10,8 @@ WORKDIR $cwd
 ARG DEBIAN_FRONTEND=noninteractive
 
 #  Install Dependencies
-RUN apt-get update  \
-    && apt-get install -y \
+RUN apt-get update --fix-missing && apt-get clean \
+    && apt-get install -y --no-install-recommends \
     build-essential \
     ca-certificates \
     cmake \
@@ -62,31 +62,31 @@ RUN wget -q https://storage.googleapis.com/chrome-for-testing-public/134.0.6998.
     && rm -rf chromedriver-linux64 chromedriver-linux64.zip
 
 # Install ALSA
-RUN apt-get update && apt-get install -y libasound2 libasound2-plugins alsa alsa-utils alsa-oss
+RUN apt-get update --fix-missing && apt-get install -y --no-install-recommends libasound2 libasound2-plugins alsa alsa-utils alsa-oss || true
 
 # Install Pulseaudio
 RUN apt-get install -y  pulseaudio pulseaudio-utils ffmpeg
 
 # Install Linux Kernel Dev
-RUN apt-get update && apt-get install -y linux-libc-dev
+RUN apt-get update --fix-missing && apt-get install -y --no-install-recommends linux-libc-dev
 
 # Update certificates
-RUN apt-get update && apt-get install -y \
+RUN apt-get update --fix-missing && apt-get install -y --no-install-recommends \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/* \
     && update-ca-certificates
 
 # Install Ctags
-RUN apt-get update && apt-get install -y universal-ctags
+RUN apt-get update --fix-missing && apt-get install -y --no-install-recommends universal-ctags
 
 # Install xterm
-RUN apt-get update && apt-get install -y xterm
+RUN apt-get update --fix-missing && apt-get install -y --no-install-recommends xterm
 
 # Install xclip
-RUN apt-get update && apt-get install -y xclip
+RUN apt-get update --fix-missing && apt-get install -y --no-install-recommends xclip
 
 # Install libavdevice-dev. Needed so that webpage streaming using pyav will work.
-RUN apt-get update && apt-get install -y libavdevice-dev && pip uninstall -y av && pip install --no-binary av "av==12.0.0"
+RUN apt-get update --fix-missing && apt-get install -y --no-install-recommends libavdevice-dev && pip uninstall -y av && pip install --no-binary av "av==12.0.0"
 
 # Install gstreamer
 RUN apt-get install -y gstreamer1.0-alsa gstreamer1.0-tools gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgirepository1.0-dev --fix-missing
